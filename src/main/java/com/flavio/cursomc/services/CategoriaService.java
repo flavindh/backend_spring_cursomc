@@ -3,10 +3,12 @@ package com.flavio.cursomc.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.flavio.cursomc.domain.Categoria;
 import com.flavio.cursomc.repositories.CategoriaRepository;
+import com.flavio.cursomc.services.exceptions.DataIntegrityException;
 import com.flavio.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -31,4 +33,13 @@ public class CategoriaService {
 		return categoriaRepository.save(obj);
 	}
 
+	public void delete(Integer id) {
+		find(id);
+		try {
+			categoriaRepository.deleteById(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos");
+		}
+
+	}
 }
